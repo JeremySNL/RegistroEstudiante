@@ -1,0 +1,66 @@
+﻿@page "/Estudiante/Create"
+
+@inject EstudiantesService EstudiantesService
+@inject NavigationManager navigationManager
+
+<PageTitle>Crear</PageTitle>
+<EditForm Model="Estudiante" OnValidSubmit="Guardar" FormName="crearEstudiante">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Estudiante</h5>
+            </div>
+
+            <div class="card-body">
+                @*Nombres*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombres</strong></label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
+                    <ValidationMessage For="(() => Estudiante.Nombres)" />
+                </div>
+
+                @*Email*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Email</strong></label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
+                    <ValidationMessage For="(() => Estudiante.Email)" />
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/Estudiante/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-floppy"></span> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public Estudiantes Estudiante { get; set; } = new Estudiantes();
+    public string Mensaje { get; set; } = string.Empty;
+
+    public async Task Guardar()
+    {
+        Console.WriteLine("\nNombres:" + Estudiante.Nombres);
+        Console.WriteLine("Email: " + Estudiante.Email + "\n");
+
+        var creado = await EstudiantesService.Guardar(Estudiante);
+
+        if (creado)
+        {
+            navigationManager.NavigateTo("/Estudiante/Index");
+        }
+        else
+        {
+            Mensaje = "No se pudo guardar correctamente";
+        }
+    }
+}

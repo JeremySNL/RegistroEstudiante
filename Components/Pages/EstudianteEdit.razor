@@ -1,0 +1,98 @@
+﻿@page "/Estudiante/Edit/{EstudianteId:int}"
+@rendermode InteractiveServer
+
+@inject EstudiantesService estudiantesService
+@inject NavigationManager navigationManager
+
+@*HTML*@
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="Estudiante" OnValidSubmit="Modificar" FormName="editarEstudiante">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Modificar Estudiante</h5>
+            </div>
+
+            <div class="card-body">
+                @*Input Hidden*@
+                <input type="hidden" name="Estudiante.EstudianteId" value="@Estudiante.EstudianteId" />
+                @*Nombres*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombres</strong></label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
+                    <ValidationMessage For="(() => Estudiante.Nombres)" />
+                </div>
+                @*Email*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Email</strong></label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
+                    <ValidationMessage For="(() => Estudiante.Email)" />
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/Estudiante/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public Estudiantes Estudiante { get; set; } = new Estudiantes();
+    [Parameter]
+    public int EstudianteId { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Estudiante == null || Estudiante.EstudianteId == 0)
+        {
+            Console.WriteLine("\nSe busco el estudiante " + Estudiante.EstudianteId + "\n");
+            Estudiante = await estudiantesService.Buscar(EstudianteId);
+            Console.WriteLine("\nSe busco el estudiante " + Estudiante.EstudianteId + "\n");
+        }
+    }
+
+    public async Task Modificar()
+    {
+        var creado = await estudiantesService.Guardar(Estudiante);
+
+        Console.WriteLine("\nNombres:" + Estudiante.Nombres);
+        Console.WriteLine("Email: " + Estudiante.Email + "\n");
+
+        if (creado)
+        {
+            //toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/Estudiante/Index");
+        }
+        else
+        {
+            //toastService.ShowError("No se ha podido modificar correctamente");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await estudiantesService.Eliminar(Estudiante.EstudianteId);
+        Console.WriteLine("\nSe intenta eliminar el estudiante " + Estudiante.EstudianteId + "\n");
+
+        if (eliminado)
+        {
+            //toastService.ShowSuccess("Se ha eliminado correctamente");
+            navigationManager.NavigateTo("/Estudiante/Index");
+        }
+        else
+        {
+            //toastService.ShowError("No se ha podido eliminar correctamente");
+        }
+    }
+}

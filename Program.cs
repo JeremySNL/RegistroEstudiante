@@ -1,10 +1,25 @@
+using RegistroEstudiante.DAL;
+using Microsoft.EntityFrameworkCore;
 using RegistroEstudiante.Components;
+using RegistroEstudiante.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Obtenemos el ConStr para usarlo en el contexto
+var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
+Console.WriteLine();
+Console.WriteLine("String de conexion: " + ConStr);
+Console.WriteLine();
+
+// Agregamos el contexto al builder con el ConStr
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+
+// Inyeccion del Service
+builder.Services.AddScoped<EstudiantesService>();
 
 var app = builder.Build();
 

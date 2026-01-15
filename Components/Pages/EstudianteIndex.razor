@@ -1,0 +1,65 @@
+﻿@page "/Estudiante/Index"
+
+@inject EstudiantesService estudiantesService
+@inject NavigationManager navigationManager
+
+<PageTitle>Registro de Estudiantes</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-center mb-4">
+            <h5 class="card-title">Registro de Estudiantes</h5>
+            <a href="/Estudiante/Create" class="btn btn-primary"> <span class="bi-plus-square mt-3"></span> Crear</a>
+        </div>
+    
+
+        <div class="card-body">
+            @*labels*@
+            <div class="row">
+        
+            </div>
+        
+            @*Inputs y botones*@
+        
+            <div class="row align-items-center">
+            </div>
+        
+            <table class="table table-hover">
+                <thead class="table  table-striped text-black">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var estudiante in ListaEstudiantes)
+                    {
+                        <tr>
+                            <td> @estudiante.EstudianteId</td>
+                            <td> @estudiante.Nombres</td>
+                            <td> @estudiante.Email</td>
+
+                            <td class="text-center">
+                                <a href="/Estudiante/Edit/@estudiante.EstudianteId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        
+            <div class="card-footer space-between">
+                <label>Cantidad: @ListaEstudiantes.Count()</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaEstudiantes = await estudiantesService.Listar();
+    }
+}
