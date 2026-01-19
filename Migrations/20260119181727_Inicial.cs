@@ -16,7 +16,7 @@ namespace RegistroEstudiante.Migrations
                 {
                     EstudianteId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Nombres = table.Column<string>(type: "TEXT", nullable: false),
+                    Nombres = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     Edad = table.Column<int>(type: "INTEGER", nullable: false)
                 },

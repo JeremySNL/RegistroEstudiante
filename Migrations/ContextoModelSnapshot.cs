@@ -31,6 +31,7 @@ namespace RegistroEstudiante.Migrations
 
                     b.Property<string>("Nombres")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("EstudianteId");
