@@ -77,9 +77,14 @@
 
         if (existeNombres)
         {
-            Console.WriteLine("Este nombre ya existe en el sistema");
-            ErrorNombreDuplicado = "Este nombre ya existe en el sistema";
-            return; 
+            Console.WriteLine("\nEste nombre ya existe en el sistema: " + Estudiante.Nombres + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + Estudiante.Nombres + "\" ya está en uso.";
+            return;
+        }
+        else
+        {
+            Console.WriteLine("\nEste nombre valido: " + Estudiante.Nombres + "\n");
+            ErrorNombreDuplicado = string.Empty;
         }
 
         var creado = await EstudiantesService.Guardar(Estudiante);

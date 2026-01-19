@@ -66,13 +66,18 @@
         Console.WriteLine("Email: " + Estudiante.Email);
         Console.WriteLine("Edad: " + Estudiante.Edad + "\n");
 
-        bool existeNombre = await EstudiantesService.ExisteNombres(Estudiante.Nombres);
+        bool existeNombres = await EstudiantesService.ExisteNombres(Estudiante.Nombres);
 
-        if (existeNombre)
+        if (existeNombres)
         {
-            Console.WriteLine("Este nombre ya existe en el sistema");
-            ErrorNombreDuplicado = "Este nombre ya existe en el sistema";
+            Console.WriteLine("\nEste nombre ya existe en el sistema: " + Estudiante.Nombres + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + Estudiante.Nombres + "\" ya está en uso.";
             return;
+        }
+        else
+        {
+            Console.WriteLine("\nEste nombre valido: " + Estudiante.Nombres + "\n");
+            ErrorNombreDuplicado = string.Empty;
         }
 
         var creado = await EstudiantesService.Guardar(Estudiante);
