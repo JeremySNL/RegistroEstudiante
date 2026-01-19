@@ -1,5 +1,4 @@
-﻿//using RegistroEstudiante.;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RegistroEstudiante.DAL;
 using RegistroEstudiante.Models;
 using System.Linq.Expressions;
@@ -12,6 +11,16 @@ namespace RegistroEstudiante.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Estudiantes.AnyAsync(e => e.EstudianteId == estudianteId);
+        }
+        public async Task<bool> ExisteNombres(String nombres)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Estudiantes.AnyAsync(e => e.Nombres.ToLower() == nombres.ToLower());
+        }
+        public async Task<bool> ExisteNombres(String nombres, int idExcluido)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Estudiantes.AnyAsync(e => e.Nombres.ToLower().Trim() == nombres.ToLower().Trim() && e.EstudianteId != idExcluido);
         }
         private async Task<bool> Insertar(Estudiantes estudiante)
         {

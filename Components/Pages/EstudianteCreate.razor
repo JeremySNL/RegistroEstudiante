@@ -19,6 +19,11 @@
                     <label class="form-label"><strong>Nombres</strong></label>
                     <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
                     <ValidationMessage For="(() => Estudiante.Nombres)" />
+
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
                 </div>
 
                 @*Email*@
@@ -26,6 +31,13 @@
                     <label class="form-label"><strong>Email</strong></label>
                     <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
                     <ValidationMessage For="(() => Estudiante.Email)" />
+                </div>
+
+                @*Edad*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Edad</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Estudiante.Edad"></InputNumber>
+                    <ValidationMessage For="(() => Estudiante.Edad)" />
                 </div>
             </div>
 
@@ -46,11 +58,22 @@
     [SupplyParameterFromForm]
     public Estudiantes Estudiante { get; set; } = new Estudiantes();
     public string Mensaje { get; set; } = string.Empty;
+    public string ErrorNombreDuplicado = string.Empty;
 
     public async Task Guardar()
     {
         Console.WriteLine("\nNombres:" + Estudiante.Nombres);
-        Console.WriteLine("Email: " + Estudiante.Email + "\n");
+        Console.WriteLine("Email: " + Estudiante.Email);
+        Console.WriteLine("Edad: " + Estudiante.Edad + "\n");
+
+        bool existeNombre = await EstudiantesService.ExisteNombres(Estudiante.Nombres);
+
+        if (existeNombre)
+        {
+            Console.WriteLine("Este nombre ya existe en el sistema");
+            ErrorNombreDuplicado = "Este nombre ya existe en el sistema";
+            return;
+        }
 
         var creado = await EstudiantesService.Guardar(Estudiante);
 

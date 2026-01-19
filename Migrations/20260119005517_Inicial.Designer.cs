@@ -10,7 +10,7 @@ using RegistroEstudiante.DAL;
 namespace RegistroEstudiante.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20260113233233_Inicial")]
+    [Migration("20260119005517_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -23,6 +23,9 @@ namespace RegistroEstudiante.Migrations
                 {
                     b.Property<int>("EstudianteId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Edad")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")

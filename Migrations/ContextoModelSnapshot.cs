@@ -22,6 +22,9 @@ namespace RegistroEstudiante.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Edad")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");

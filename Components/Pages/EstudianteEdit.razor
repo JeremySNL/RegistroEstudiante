@@ -1,15 +1,13 @@
 ﻿@page "/Estudiante/Edit/{EstudianteId:int}"
 @rendermode InteractiveServer
 
-@inject EstudiantesService estudiantesService
+@inject EstudiantesService EstudiantesService
 @inject NavigationManager navigationManager
 
 @*HTML*@
 <PageTitle>Modificar</PageTitle>
 <EditForm Model="Estudiante" OnValidSubmit="Modificar" FormName="editarEstudiante">
     <DataAnnotationsValidator />
-    <ValidationSummary />
-
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-header text-center">
@@ -24,12 +22,23 @@
                     <label class="form-label"><strong>Nombres</strong></label>
                     <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
                     <ValidationMessage For="(() => Estudiante.Nombres)" />
+                    @*Nombre duplicado error*@
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
                 </div>
                 @*Email*@
                 <div class="mb-3">
                     <label class="form-label"><strong>Email</strong></label>
                     <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
                     <ValidationMessage For="(() => Estudiante.Email)" />
+                </div>
+                @*Edad*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Edad</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Estudiante.Edad"></InputNumber>
+                    <ValidationMessage For="(() => Estudiante.Edad)" />
                 </div>
             </div>
 
@@ -48,23 +57,32 @@
 @code {
     [SupplyParameterFromForm]
     public Estudiantes Estudiante { get; set; } = new Estudiantes();
+
     [Parameter]
     public int EstudianteId { get; set; }
     public string Mensaje { get; set; } = string.Empty;
+    public string ErrorNombreDuplicado = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         if (Estudiante == null || Estudiante.EstudianteId == 0)
         {
-            Console.WriteLine("\nSe busco el estudiante " + Estudiante.EstudianteId + "\n");
-            Estudiante = await estudiantesService.Buscar(EstudianteId);
-            Console.WriteLine("\nSe busco el estudiante " + Estudiante.EstudianteId + "\n");
+            Estudiante = await EstudiantesService.Buscar(EstudianteId);
         }
     }
 
     public async Task Modificar()
     {
-        var creado = await estudiantesService.Guardar(Estudiante);
+        bool existeNombres = await EstudiantesService.ExisteNombres(Estudiante.Nombres, EstudianteId);
+
+        if (existeNombres)
+        {
+            Console.WriteLine("Este nombre ya existe en el sistema");
+            ErrorNombreDuplicado = "Este nombre ya existe en el sistema";
+            return; 
+        }
+
+        var creado = await EstudiantesService.Guardar(Estudiante);
 
         Console.WriteLine("\nNombres:" + Estudiante.Nombres);
         Console.WriteLine("Email: " + Estudiante.Email + "\n");
@@ -82,8 +100,8 @@
 
     private async Task Eliminar()
     {
-        var eliminado = await estudiantesService.Eliminar(Estudiante.EstudianteId);
         Console.WriteLine("\nSe intenta eliminar el estudiante " + Estudiante.EstudianteId + "\n");
+        var eliminado = await EstudiantesService.Eliminar(Estudiante.EstudianteId);
 
         if (eliminado)
         {

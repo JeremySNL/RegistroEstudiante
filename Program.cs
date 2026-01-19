@@ -11,9 +11,7 @@ builder.Services.AddRazorComponents()
 
 // Obtenemos el ConStr para usarlo en el contexto
 var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
-Console.WriteLine();
-Console.WriteLine("String de conexion: " + ConStr);
-Console.WriteLine();
+Console.WriteLine("\nString de conexion: " + ConStr + "\n");
 
 // Agregamos el contexto al builder con el ConStr
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
