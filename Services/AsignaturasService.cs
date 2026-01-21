@@ -8,7 +8,7 @@ namespace RegistroEstudiante.Services;
 
 public class AsignaturasService(IDbContextFactory<Contexto> DbFactory)
 {
-    private async Task<bool> Existe(int asignaturaId, String? nombre = null)
+    public async Task<bool> Existe(int asignaturaId, String? nombre = null)
     {
         if (nombre == null)
         {
