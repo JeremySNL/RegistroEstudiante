@@ -1,0 +1,127 @@
+﻿@page "/Asignatura/Edit/{AsignaturaId:int}"
+
+@inject AsignaturasService asignaturasService
+@inject NavigationManager navigationManager
+
+@*HTML*@
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="Asignatura" OnValidSubmit="Modificar" FormName="editarAsignatura">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Modificar Asignatura</h5>
+            </div>
+
+            <div class="card-body">
+                @*Input Hidden*@
+                <input type="hidden" name="Asignatura.AsignaturaId" value="@Asignatura.AsignaturaId" />
+                
+                @*Codigo*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Código</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Codigo"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Codigo)" />
+                </div>
+                
+                @*Nombre*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Nombre"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Nombre)" />
+
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
+                </div>
+
+                @*Aula*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aula</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Aula"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Aula)" />
+                </div>
+
+                @*Creditos*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Créditos</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Asignatura.Creditos"></InputNumber>
+                    <ValidationMessage For="(() => Asignatura.Creditos)" />
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/Asignatura/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public Asignaturas Asignatura { get; set; } = new Asignaturas();
+
+    [Parameter]
+    public int AsignaturaId { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public string ErrorNombreDuplicado = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Asignatura == null || Asignatura.AsignaturaId == 0)
+        {
+            Asignatura = await asignaturasService.Buscar(AsignaturaId);
+        }
+    }
+
+    public async Task Modificar()
+    {
+        bool existeNombres = await asignaturasService.Existe(AsignaturaId, Asignatura.Nombre);
+
+        if (existeNombres)
+        {
+            Console.WriteLine("\nEste nombre ya existe en el sistema: " + Asignatura.Nombre + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + Asignatura.Nombre + "\" ya está en uso.";
+            return;
+        }
+        else
+        {
+            Console.WriteLine("\nEste nombre valido: " + Asignatura.Nombre + "\n");
+            ErrorNombreDuplicado = string.Empty;
+        }
+
+        var creado = await asignaturasService.Guardar(Asignatura);
+
+        if (creado)
+        {
+            //toastService.ShowSuccess("Se ha modificado correctamente");
+            navigationManager.NavigateTo("/Asignatura/Index");
+        }
+        else
+        {
+            //toastService.ShowError("No se ha podido modificar correctamente");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        //Console.WriteLine("\nSe intenta eliminar la asignatura " + Asignatura.AsignaturaId + "\n");
+        var eliminado = await asignaturasService.Eliminar(Asignatura.AsignaturaId);
+
+        if (eliminado)
+        {
+            //toastService.ShowSuccess("Se ha eliminado correctamente");
+            navigationManager.NavigateTo("/Asignatura/Index");
+        }
+        else
+        {
+            //toastService.ShowError("No se ha podido eliminar correctamente");
+        }
+    }
+}
