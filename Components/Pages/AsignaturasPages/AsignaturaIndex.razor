@@ -1,0 +1,68 @@
+﻿@page "/Asignatura/Index"
+
+@inject AsignaturasService asignaturaService
+@inject NavigationManager navigationManager
+
+<PageTitle>Registro de asignaturas</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-center mb-4">
+            <h5 class="card-title">Registro de Asignaturas</h5>
+            <a href="/Asignatura/Create" class="btn btn-primary"> <span class="bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+
+        <div class="card-body">
+            @*labels*@
+            <div class="row">
+            </div>
+
+            @*Inputs y botones*@
+
+            <div class="row align-items-center">
+            </div>
+
+            <table class="table table-hover">
+                <thead class="table  table-striped text-black">
+                    <tr>
+                        <th>Id</th>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Aula</th>
+                        <th>Creditos</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var asignatura in ListaAsignaturas)
+                    {
+                        <tr>
+                            <td> @asignatura.AsignaturaId</td>
+                            <td> @asignatura.Codigo</td>
+                            <td> @asignatura.Nombre</td>
+                            <td> @asignatura.Aula</td>
+                            <td> @asignatura.Creditos</td>
+
+                            <td class="text-center">
+                                <a href="/Estudiante/Edit/@asignatura.AsignaturaId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="card-footer space-between">
+                <label>Cantidad: @ListaAsignaturas.Count()</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Asignaturas> ListaAsignaturas { get; set; } = new List<Asignaturas>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaAsignaturas = await asignaturaService.Listar();
+    }
+}

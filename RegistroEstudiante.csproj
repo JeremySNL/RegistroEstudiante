@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Pages\AsignaturasPages\" />
     <Folder Include="Data\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
