@@ -41,12 +41,18 @@ public class AsignaturasService(IDbContextFactory<Contexto> DbFactory)
     public async Task<bool> Eliminar(int asignaturaId)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Asignaturas.AsNoTracking().Where(e => e.AsignaturaId == asignaturaId).ExecuteDeleteAsync() > 0;
+        return await contexto.Asignaturas
+            .AsNoTracking()
+            .Where(e => e.AsignaturaId == asignaturaId)
+            .ExecuteDeleteAsync() > 0;
     }
-    public async Task<List<Asignaturas>> Listar()
+    public async Task<List<Asignaturas>> Listar(Expression<Func<Asignaturas, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Asignaturas.ToListAsync();
+        return await contexto.Asignaturas
+            .Where(criterio)
+            .AsNoTracking()
+            .ToListAsync();
     }
     public async Task<bool> Guardar(Asignaturas asignatura)
     {
