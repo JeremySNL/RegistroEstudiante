@@ -3,7 +3,6 @@
 @inject EstudiantesService EstudiantesService
 @inject NavigationManager navigationManager
 
-@*HTML*@
 <PageTitle>Modificar</PageTitle>
 <EditForm Model="Estudiante" OnValidSubmit="Modificar" FormName="editarEstudiante">
     <DataAnnotationsValidator />
@@ -54,7 +53,6 @@
 </EditForm>
 
 @code {
-    [SupplyParameterFromForm]
     public Estudiantes Estudiante { get; set; } = new Estudiantes();
 
     [Parameter]
