@@ -14,7 +14,7 @@ var ConStr = builder.Configuration.GetConnectionString("SqlConStr");
 Console.WriteLine("\nString de conexion: " + ConStr + "\n");
 
 // Agregamos el contexto al builder con el ConStr
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 // Inyeccion del Service
 builder.Services.AddScoped<EstudiantesService>();

@@ -14,11 +14,11 @@ namespace RegistroEstudiante.Migrations
                 name: "Estudiantes",
                 columns: table => new
                 {
-                    EstudianteId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nombres = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Edad = table.Column<int>(type: "INTEGER", nullable: false)
+                    EstudianteId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nombres = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Edad = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
