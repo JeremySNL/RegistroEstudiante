@@ -15,12 +15,38 @@
         <div class="card-body">
             @*labels*@
             <div class="row">
-        
+                @*Filtra por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtro</strong></label>
+                </div>
+
+                @*Valor Filtro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Búsqueda</strong></label>
+                </div>
             </div>
         
             @*Inputs y botones*@
         
             <div class="row align-items-center">
+                @*Filtro*@
+                <div class="col-3">
+                    <div class="input-group">
+                        <InputSelect class="form-control" @bind-Value="Filtro">
+                            <option value="" selected disabled hidden>Elija una opción</option>
+                            <option value="Nombre">Nombre</option>
+                            <option value="Email">Email</option>
+                        </InputSelect>
+                    </div>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar..." />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
             </div>
         
             <table class="table table-hover">
@@ -59,9 +85,30 @@
 
 @code{
     public List<Estudiantes> ListaEstudiantes { get; set; } = new List<Estudiantes>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaEstudiantes = await estudiantesService.Listar();
+        ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId > 0);
+    }
+
+    public async Task Buscar()
+    {
+        if (Filtro != "")
+        {
+            if (Filtro == "Nombre")
+            {
+                ListaEstudiantes = await estudiantesService.Listar(e => e.Nombres.ToLower().Trim().Contains(ValorFiltro));
+            }
+            if (Filtro == "Email")
+            {
+                ListaEstudiantes = await estudiantesService.Listar(e => e.Email.ToLower().Trim().Contains(ValorFiltro));
+            }
+        }
+        else
+        {
+            ListaEstudiantes = await estudiantesService.Listar(e => e.EstudianteId > 0);
+        }
     }
 }
