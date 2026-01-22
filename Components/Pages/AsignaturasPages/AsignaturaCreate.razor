@@ -1,0 +1,96 @@
+﻿@page "/Asignatura/Create"
+
+@inject AsignaturasService AsignaturaService
+@inject NavigationManager navigationManager
+
+<PageTitle>Crear</PageTitle>
+<EditForm Model="Asignatura" OnValidSubmit="Guardar" FormName="crearAsignatura">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear Asignatura</h5>
+            </div>
+
+            <div class="card-body">
+                @*Codigo*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Código</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Codigo"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Codigo)" />
+                </div>
+                
+                @*Nombre*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Nombre"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Nombre)" />
+
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
+                </div>
+
+                @*Aula*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aula</strong></label>
+                    <InputText class="form-control" @bind-Value="Asignatura.Aula"></InputText>
+                    <ValidationMessage For="(() => Asignatura.Aula)" />
+                </div>
+
+                @*Creditos*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Créditos</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Asignatura.Creditos"></InputNumber>
+                    <ValidationMessage For="(() => Asignatura.Creditos)" />
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/Asignatura/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-floppy"></span> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Asignaturas Asignatura { get; set; } = new Asignaturas();
+    public string Mensaje { get; set; } = string.Empty;
+    public string ErrorNombreDuplicado = string.Empty;
+
+    public async Task Guardar()
+    {
+        bool existeNombre = await AsignaturaService.Existe(Asignatura.AsignaturaId, Asignatura.Nombre);
+
+        if (existeNombre)
+        {
+            //Console.WriteLine("\nEste nombre ya existe en el sistema: " + Asignatura.Nombre + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + Asignatura.Nombre + "\" ya está en uso.";
+            return;
+        }
+        else
+        {
+            //Console.WriteLine("\nEste nombre valido: " + Asignatura.Nombre + "\n");
+            ErrorNombreDuplicado = string.Empty;
+        }
+
+        var creado = await AsignaturaService.Guardar(Asignatura);
+
+        if (creado)
+        {
+            navigationManager.NavigateTo("/Asignatura/Index");
+        }
+        else
+        {
+            Mensaje = "No se pudo guardar correctamente";
+        }
+    }
+}
