@@ -2,6 +2,7 @@
 
 @inject EstudiantesService EstudiantesService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 <PageTitle>Modificar</PageTitle>
 <EditForm Model="Estudiante" OnValidSubmit="Modificar" FormName="editarEstudiante">
@@ -91,12 +92,12 @@
 
         if (creado)
         {
-            //toastService.ShowSuccess("Se ha modificado correctamente");
+            toastService.ShowSuccess("Estudiante modificado exitosamente");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
         else
         {
-            //toastService.ShowError("No se ha podido modificar correctamente");
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
         }
     }
 
@@ -107,12 +108,12 @@
 
         if (eliminado)
         {
-            //toastService.ShowSuccess("Se ha eliminado correctamente");
+            toastService.ShowSuccess("Se ha eliminado correctamente");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
         else
         {
-            //toastService.ShowError("No se ha podido eliminar correctamente");
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
         }
     }
 }

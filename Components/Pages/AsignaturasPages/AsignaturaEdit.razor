@@ -2,6 +2,7 @@
 
 @inject AsignaturasService asignaturasService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 @*HTML*@
 <PageTitle>Modificar</PageTitle>
@@ -100,28 +101,27 @@
 
         if (creado)
         {
-            //toastService.ShowSuccess("Se ha modificado correctamente");
+            toastService.ShowSuccess("Asignatura modificada exitosamente");
             navigationManager.NavigateTo("/Asignatura/Index");
         }
         else
         {
-            //toastService.ShowError("No se ha podido modificar correctamente");
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
         }
     }
 
     private async Task Eliminar()
     {
-        //Console.WriteLine("\nSe intenta eliminar la asignatura " + Asignatura.AsignaturaId + "\n");
         var eliminado = await asignaturasService.Eliminar(Asignatura.AsignaturaId);
 
         if (eliminado)
         {
-            //toastService.ShowSuccess("Se ha eliminado correctamente");
+            toastService.ShowSuccess("Se ha eliminado correctamente");
             navigationManager.NavigateTo("/Asignatura/Index");
         }
         else
         {
-            //toastService.ShowError("No se ha podido eliminar correctamente");
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
         }
     }
 }

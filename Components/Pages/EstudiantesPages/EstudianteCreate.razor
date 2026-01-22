@@ -2,6 +2,7 @@
 
 @inject EstudiantesService EstudiantesService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 <PageTitle>Crear</PageTitle>
 <EditForm Model="Estudiante" OnValidSubmit="Guardar" FormName="crearEstudiante">
@@ -83,10 +84,12 @@
 
         if (creado)
         {
+            toastService.ShowSuccess("¡Estudiante creado exitosamente!");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
         else
         {
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
             Mensaje = "No se pudo guardar correctamente";
         }
     }
