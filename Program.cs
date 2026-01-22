@@ -20,6 +20,9 @@ builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 builder.Services.AddScoped<EstudiantesService>();
 builder.Services.AddScoped<AsignaturasService>();
 
+// Registra el servicio de BlazorBootstrap
+builder.Services.AddBlazorBootstrap();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
