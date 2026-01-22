@@ -43,10 +43,13 @@ public class EstudiantesService(IDbContextFactory<Contexto> DbFactory)
         await using var contexto = await DbFactory.CreateDbContextAsync();
         return await contexto.Estudiantes.AsNoTracking().Where(e => e.EstudianteId == estudianteId).ExecuteDeleteAsync() > 0;
     }
-    public async Task<List<Estudiantes>> Listar()
+    public async Task<List<Estudiantes>> Listar(Expression<Func<Estudiantes, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Estudiantes.ToListAsync();
+        return await contexto.Estudiantes
+            .Where(criterio)
+            .AsNoTracking()
+            .ToListAsync();
     }
     public async Task<bool> Guardar(Estudiantes estudiante)
     {
