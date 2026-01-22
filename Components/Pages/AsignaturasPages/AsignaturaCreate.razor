@@ -2,6 +2,7 @@
 
 @inject AsignaturasService AsignaturaService
 @inject NavigationManager navigationManager
+@inject ToastService toastService
 
 <PageTitle>Crear</PageTitle>
 <EditForm Model="Asignatura" OnValidSubmit="Guardar" FormName="crearAsignatura">
@@ -63,7 +64,6 @@
 
 @code {
     public Asignaturas Asignatura { get; set; } = new Asignaturas();
-    public string Mensaje { get; set; } = string.Empty;
     public string ErrorNombreDuplicado = string.Empty;
 
     public async Task Guardar()
@@ -86,11 +86,12 @@
 
         if (creado)
         {
+            toastService.ShowSuccess("¡Asignatura creada exitosamente!");
             navigationManager.NavigateTo("/Asignatura/Index");
         }
         else
         {
-            Mensaje = "No se pudo guardar correctamente";
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
         }
     }
 }
