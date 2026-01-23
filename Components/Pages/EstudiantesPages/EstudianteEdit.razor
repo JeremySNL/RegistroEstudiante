@@ -46,11 +46,36 @@
                 <a href="/Estudiante/Index" class="btn btn-secondary">
                     <span class="bi bi-arrow-left"></span> Volver
                 </a>
-                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+                <button type="button" class="btn btn-primary bi bi-floppy" @onclick="MostrarModalModificar">Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="MostrarModalEliminar"> Eliminar</button>
             </div>
         </div>
     </div>
+
+    <Modal @ref="ModalEliminar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Eliminar estudiante">
+        <BodyTemplate>
+            ¿Estas seguro de eliminar este estudiante?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalEliminar">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="Eliminar">Estoy seguro</button>
+            </div>
+            
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="ModalModificar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Modificar estudiante">
+        <BodyTemplate>
+            ¿Estas seguro de modificar este estudiante?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalModificar">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Estoy seguro</button>
+            </div>
+        </FooterTemplate>
+    </Modal>
 </EditForm>
 
 @code {
@@ -60,6 +85,8 @@
     public int EstudianteId { get; set; }
     public string Mensaje { get; set; } = string.Empty;
     public string ErrorNombreDuplicado = string.Empty;
+    public Modal ModalEliminar = default!;
+    public Modal ModalModificar = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,29 +96,35 @@
         }
     }
 
+    private async Task MostrarModalModificar()
+    {
+        await ModalModificar.ShowAsync();
+    }
+
+    private async Task EsconderModalModificar()
+    {
+        await ModalModificar.HideAsync();
+    }
+
     public async Task Modificar()
     {
         bool existeNombres = await EstudiantesService.ExisteNombres(Estudiante.Nombres, EstudianteId);
 
         if (existeNombres)
         {
-            Console.WriteLine("\nEste nombre ya existe en el sistema: " + Estudiante.Nombres + "\n");
             ErrorNombreDuplicado = "El nombre \"" + Estudiante.Nombres + "\" ya está en uso.";
             return;
         }
         else
         {
-            Console.WriteLine("\nEste nombre valido: " + Estudiante.Nombres + "\n");
             ErrorNombreDuplicado = string.Empty;
         }
 
         var creado = await EstudiantesService.Guardar(Estudiante);
 
-        Console.WriteLine("\nNombres:" + Estudiante.Nombres);
-        Console.WriteLine("Email: " + Estudiante.Email + "\n");
-
         if (creado)
         {
+            await EsconderModalModificar();
             toastService.ShowSuccess("Estudiante modificado exitosamente");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
@@ -101,13 +134,23 @@
         }
     }
 
+    private async Task MostrarModalEliminar()
+    {
+        await ModalEliminar.ShowAsync();
+    }
+
+    private async Task EsconderModalEliminar()
+    {
+        await ModalEliminar.HideAsync();
+    }
+
     private async Task Eliminar()
     {
-        Console.WriteLine("\nSe intenta eliminar el estudiante " + Estudiante.EstudianteId + "\n");
         var eliminado = await EstudiantesService.Eliminar(Estudiante.EstudianteId);
 
         if (eliminado)
         {
+            await EsconderModalEliminar();
             toastService.ShowSuccess("Se ha eliminado correctamente");
             navigationManager.NavigateTo("/Estudiante/Index");
         }
