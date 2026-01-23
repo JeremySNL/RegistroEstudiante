@@ -1,6 +1,6 @@
 ﻿@page "/Asignatura/Create"
 
-@inject AsignaturasService AsignaturaService
+@inject AsignaturasService asignaturasService
 @inject NavigationManager navigationManager
 @inject ToastService toastService
 
@@ -68,7 +68,7 @@
 
     public async Task Guardar()
     {
-        bool existeNombre = await AsignaturaService.Existe(Asignatura.AsignaturaId, Asignatura.Nombre);
+        bool existeNombre = await asignaturasService.Existe(Asignatura.AsignaturaId, Asignatura.Nombre);
 
         if (existeNombre)
         {
@@ -82,7 +82,7 @@
             ErrorNombreDuplicado = string.Empty;
         }
 
-        var creado = await AsignaturaService.Guardar(Asignatura);
+        var creado = await asignaturasService.Guardar(Asignatura);
 
         if (creado)
         {

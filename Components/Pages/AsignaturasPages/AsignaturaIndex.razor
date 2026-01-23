@@ -1,6 +1,6 @@
 ﻿@page "/Asignatura/Index"
 
-@inject AsignaturasService asignaturaService
+@inject AsignaturasService asignaturasService
 @inject NavigationManager navigationManager
 
 <PageTitle>Registro de asignaturas</PageTitle>
@@ -92,7 +92,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaAsignaturas = await asignaturaService.Listar(a => a.AsignaturaId > 0);
+        ListaAsignaturas = await asignaturasService.Listar(a => a.AsignaturaId > 0);
     }
     public async Task Buscar()
     {
@@ -100,20 +100,20 @@
         {
             if (Filtro == "Nombre")
             {
-                ListaAsignaturas = await asignaturaService.Listar(a => a.Nombre.ToLower().Trim().Contains(ValorFiltro));
+                ListaAsignaturas = await asignaturasService.Listar(a => a.Nombre.ToLower().Trim().Contains(ValorFiltro));
             }
             if (Filtro == "Codigo")
             {
-                ListaAsignaturas = await asignaturaService.Listar(a => a.Codigo.ToLower().Trim().Contains(ValorFiltro));
+                ListaAsignaturas = await asignaturasService.Listar(a => a.Codigo.ToLower().Trim().Contains(ValorFiltro));
             }
             if (Filtro == "Aula")
             {
-                ListaAsignaturas = await asignaturaService.Listar(a => a.Aula.ToLower().Trim().Contains(ValorFiltro));
+                ListaAsignaturas = await asignaturasService.Listar(a => a.Aula.ToLower().Trim().Contains(ValorFiltro));
             }
         }
         else
         {
-            ListaAsignaturas = await asignaturaService.Listar(a => a.AsignaturaId > 0);
+            ListaAsignaturas = await asignaturasService.Listar(a => a.AsignaturaId > 0);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@page "/Estudiante/Edit/{EstudianteId:int}"
 
-@inject EstudiantesService EstudiantesService
+@inject EstudiantesService estudiantesService
 @inject NavigationManager navigationManager
 @inject ToastService toastService
 
@@ -92,7 +92,7 @@
     {
         if (Estudiante == null || Estudiante.EstudianteId == 0)
         {
-            Estudiante = await EstudiantesService.Buscar(EstudianteId);
+            Estudiante = await estudiantesService.Buscar(EstudianteId);
         }
     }
 
@@ -108,7 +108,7 @@
 
     public async Task Modificar()
     {
-        bool existeNombres = await EstudiantesService.ExisteNombres(Estudiante.Nombres, EstudianteId);
+        bool existeNombres = await estudiantesService.ExisteNombres(Estudiante.Nombres, EstudianteId);
 
         if (existeNombres)
         {
@@ -120,7 +120,7 @@
             ErrorNombreDuplicado = string.Empty;
         }
 
-        var creado = await EstudiantesService.Guardar(Estudiante);
+        var creado = await estudiantesService.Guardar(Estudiante);
 
         if (creado)
         {
@@ -146,7 +146,7 @@
 
     private async Task Eliminar()
     {
-        var eliminado = await EstudiantesService.Eliminar(Estudiante.EstudianteId);
+        var eliminado = await estudiantesService.Eliminar(Estudiante.EstudianteId);
 
         if (eliminado)
         {
