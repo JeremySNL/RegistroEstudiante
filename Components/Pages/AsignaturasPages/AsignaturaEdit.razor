@@ -57,11 +57,36 @@
                 <a href="/Asignatura/Index" class="btn btn-secondary">
                     <span class="bi bi-arrow-left"></span> Volver
                 </a>
-                <button type="submit" class="btn btn-primary bi bi-floppy"> Modificar</button>
-                <button type="button" class="btn btn-danger bi bi-trash" @onclick="Eliminar"> Eliminar</button>
+                <button type="button" class="btn btn-primary bi bi-floppy" @onclick="MostrarModalModificar"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="MostrarModalEliminar"> Eliminar</button>
             </div>
         </div>
     </div>
+
+    <Modal @ref="ModalEliminar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Eliminar asignatura">
+        <BodyTemplate>
+            ¿Estas seguro de eliminar esta asignatura?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalEliminar">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="Eliminar">Estoy seguro</button>
+            </div>
+
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="ModalModificar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Modificar asignatura">
+        <BodyTemplate>
+            ¿Estas seguro de modificar esta asignatura?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalModificar">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Estoy seguro</button>
+            </div>
+        </FooterTemplate>
+    </Modal>
 </EditForm>
 
 @code {
@@ -72,6 +97,8 @@
     public int AsignaturaId { get; set; }
     public string Mensaje { get; set; } = string.Empty;
     public string ErrorNombreDuplicado = string.Empty;
+    public Modal ModalEliminar = default!;
+    public Modal ModalModificar = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,6 +106,16 @@
         {
             Asignatura = await asignaturasService.Buscar(AsignaturaId);
         }
+    }
+
+    private async Task MostrarModalModificar()
+    {
+        await ModalModificar.ShowAsync();
+    }
+
+    private async Task EsconderModalModificar()
+    {
+        await ModalModificar.HideAsync();
     }
 
     public async Task Modificar()
@@ -101,6 +138,7 @@
 
         if (creado)
         {
+            await EsconderModalModificar();
             toastService.ShowSuccess("Asignatura modificada exitosamente");
             navigationManager.NavigateTo("/Asignatura/Index");
         }
@@ -110,12 +148,23 @@
         }
     }
 
+    private async Task MostrarModalEliminar()
+    {
+        await ModalEliminar.ShowAsync();
+    }
+
+    private async Task EsconderModalEliminar()
+    {
+        await ModalEliminar.HideAsync();
+    }
+
     private async Task Eliminar()
     {
         var eliminado = await asignaturasService.Eliminar(Asignatura.AsignaturaId);
 
         if (eliminado)
         {
+            await EsconderModalEliminar();
             toastService.ShowSuccess("Se ha eliminado correctamente");
             navigationManager.NavigateTo("/Asignatura/Index");
         }
