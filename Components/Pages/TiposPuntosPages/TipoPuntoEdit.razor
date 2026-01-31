@@ -1,0 +1,204 @@
+﻿@page "/TipoPunto/Edit/{TipoId:int}"
+
+@inject TiposPuntosService tiposPuntosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+@using Enums;
+
+@*HTML*@
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="TipoPunto" OnValidSubmit="Modificar" FormName="editarTipoPunto">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Modificar tipo de punto</h5>
+            </div>
+
+            <div class="card-body">
+                @*Input Hidden*@
+                <input type="hidden" name="TipoPunto.TipoId" value="@TipoPunto.TipoId" />
+                
+                @*Nombre*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control" @bind-Value="TipoPunto.Nombre"></InputText>
+                    <ValidationMessage For="(() => TipoPunto.Nombre)" />
+
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
+                </div>
+
+                @*Descripcion*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripcion</strong></label>
+                    <InputText class="form-control" @bind-Value="TipoPunto.Descripcion"></InputText>
+                    <ValidationMessage For="(() => TipoPunto.Descripcion)" />
+                </div>
+
+                @*Valor en puntos*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Valor en puntos</strong></label>
+                    <InputNumber class="form-control" @bind-Value="TipoPunto.ValorPuntos"></InputNumber>
+                    <ValidationMessage For="(() => TipoPunto.ValorPuntos)" />
+                </div>
+
+                @*Color*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Color</strong></label>
+                    <InputSelect class="form-control" @bind-Value="TipoPunto.Color">
+                        <option value="" selected disabled hidden>Elija un color</option>
+                        <option value="@Color.Rojo">Rojo</option>
+                        <option value="@Color.Azul">Azul</option>
+                        <option value="@Color.Verde">Verde</option>
+                        <option value="@Color.Rosa">Rosa</option>
+                        <option value="@Color.Amarillo">Amarillo</option>
+                        <option value="@Color.Gris">Gris</option>
+                        <option value="@Color.Negro">Negro</option>
+                        <option value="@Color.Blanco">Blanco</option>
+                    </InputSelect>
+                </div>
+
+                @*Icono*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Icono</strong></label>
+                    <InputSelect class="form-control" @bind-Value="TipoPunto.Icono">
+                        <option value="" selected disabled hidden>Elija un icono</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.PulgarArriba">Pulgar arriba</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Logro">Logro</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Destacado">Destacado</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Error">Error</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Advertencia">Advertencia</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.PulgarAbajo">Pulgar abajo</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Pregunta">Pregunta</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Participacion">Participacion</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Reloj">Reloj</option>
+                    </InputSelect>
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/TipoPunto/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="button" class="btn btn-primary bi bi-floppy" @onclick="MostrarModalModificar"> Modificar</button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="MostrarModalEliminar"> Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <Modal @ref="ModalEliminar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Eliminar tipo de punto">
+        <BodyTemplate>
+            ¿Estas seguro de eliminar este tipo de punto?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalEliminar">Cerrar</button>
+                <button type="button" class="btn btn-primary" @onclick="Eliminar">Estoy seguro</button>
+            </div>
+
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="ModalModificar" IsVerticallyCentered="true" UseStaticBackdrop="true" Title="Modificar tipo de punto">
+        <BodyTemplate>
+            ¿Estas seguro de modificar este tipo de punto?
+        </BodyTemplate>
+        <FooterTemplate>
+            <div class="align-items-center">
+                <button type="button" class="btn btn-secondary" @onclick="EsconderModalModificar">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Estoy seguro</button>
+            </div>
+        </FooterTemplate>
+    </Modal>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public TiposPuntos TipoPunto { get; set; } = new TiposPuntos();
+
+    [Parameter]
+    public int TipoId { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public string ErrorNombreDuplicado = string.Empty;
+    public Modal ModalEliminar = default!;
+    public Modal ModalModificar = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (TipoPunto == null || TipoPunto.TipoId == 0)
+        {
+            TipoPunto = await tiposPuntosService.Buscar(TipoId);
+        }
+    }
+
+    private async Task MostrarModalModificar()
+    {
+        await ModalModificar.ShowAsync();
+    }
+
+    private async Task EsconderModalModificar()
+    {
+        await ModalModificar.HideAsync();
+    }
+
+    public async Task Modificar()
+    {
+        bool existeNombres = await tiposPuntosService.Existe(TipoId, TipoPunto.Nombre);
+
+        if (existeNombres)
+        {
+            Console.WriteLine("\nEste nombre ya existe en el sistema: " + TipoPunto.Nombre + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + TipoPunto.Nombre + "\" ya está en uso.";
+            return;
+        }
+        else
+        {
+            Console.WriteLine("\nEste nombre valido: " + TipoPunto.Nombre + "\n");
+            ErrorNombreDuplicado = string.Empty;
+        }
+
+        var creado = await tiposPuntosService.Guardar(TipoPunto);
+
+        if (creado)
+        {
+            await EsconderModalModificar();
+            toastService.ShowSuccess("TipoPunto modificada exitosamente");
+            navigationManager.NavigateTo("/TipoPunto/Index");
+        }
+        else
+        {
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
+        }
+    }
+
+    private async Task MostrarModalEliminar()
+    {
+        await ModalEliminar.ShowAsync();
+    }
+
+    private async Task EsconderModalEliminar()
+    {
+        await ModalEliminar.HideAsync();
+    }
+
+    private async Task Eliminar()
+    {
+        var eliminado = await tiposPuntosService.Eliminar(TipoPunto.TipoId);
+
+        if (eliminado)
+        {
+            await EsconderModalEliminar();
+            toastService.ShowSuccess("Se ha eliminado correctamente");
+            navigationManager.NavigateTo("/TipoPunto/Index");
+        }
+        else
+        {
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
+        }
+    }
+}
