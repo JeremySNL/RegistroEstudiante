@@ -1,0 +1,125 @@
+﻿@page "/TipoPunto/Create"
+
+@inject TiposPuntosService tiposPuntosService
+@inject NavigationManager navigationManager
+@inject ToastService toastService
+
+@using Enums;
+
+<PageTitle>Crear</PageTitle>
+<EditForm Model="TipoPunto" OnValidSubmit="Guardar" FormName="crearAsignatura">
+    <DataAnnotationsValidator />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Crear tipos de puntos</h5>
+            </div>
+
+            <div class="card-body"> 
+                @*Nombre*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre</strong></label>
+                    <InputText class="form-control" @bind-Value="TipoPunto.Nombre"></InputText>
+                    <ValidationMessage For="(() => TipoPunto.Nombre)" />
+
+                    @if (!string.IsNullOrEmpty(ErrorNombreDuplicado))
+                    {
+                        <div class="text-danger validation-message">@ErrorNombreDuplicado</div>
+                    }
+                </div>
+
+                @*Descripcion*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripcion</strong></label>
+                    <InputText class="form-control" @bind-Value="TipoPunto.Descripcion"></InputText>
+                    <ValidationMessage For="(() => TipoPunto.Descripcion)" />
+                </div>
+
+                @*Valor en puntos*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Valor en puntos</strong></label>
+                    <InputNumber class="form-control" @bind-Value="TipoPunto.ValorPuntos"></InputNumber>
+                    <ValidationMessage For="(() => TipoPunto.ValorPuntos)" />
+                </div>
+
+                @*Color*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Color</strong></label>
+                    <InputSelect class="form-control" @bind-Value="TipoPunto.Color">
+                        <option value="" selected disabled hidden>Elija un color</option>
+                        <option value="@Color.Rojo">Rojo</option>
+                        <option value="@Color.Azul">Azul</option>
+                        <option value="@Color.Verde">Verde</option>
+                        <option value="@Color.Rosa">Rosa</option>
+                        <option value="@Color.Amarillo">Amarillo</option>
+                        <option value="@Color.Gris">Gris</option>
+                        <option value="@Color.Negro">Negro</option>
+                        <option value="@Color.Blanco">Blanco</option>
+                    </InputSelect>
+                </div>
+
+                @*Icono*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Icono</strong></label>
+                    <InputSelect class="form-control" @bind-Value="TipoPunto.Icono">
+                        <option value="" selected disabled hidden>Elija un icono</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.PulgarArriba">Pulgar arriba</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Logro">Logro</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Destacado">Destacado</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Error">Error</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Advertencia">Advertencia</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.PulgarAbajo">Pulgar abajo</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Pregunta">Pregunta</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Participacion">Participacion</option>
+                        <option value="@RegistroEstudiante.Enums.Icon.Reloj">Reloj</option>
+                    </InputSelect>
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/TipoPunto/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-floppy"></span> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public TiposPuntos TipoPunto { get; set; } = new TiposPuntos();
+    public string ErrorNombreDuplicado = string.Empty;
+
+    public async Task Guardar()
+    {
+        bool existeNombre = await tiposPuntosService.Existe(TipoPunto.TipoId, TipoPunto.Nombre);
+
+        if (existeNombre)
+        {
+            //Console.WriteLine("\nEste nombre ya existe en el sistema: " + TipoPunto.Nombre + "\n");
+            ErrorNombreDuplicado = "El nombre \"" + TipoPunto.Nombre + "\" ya está en uso.";
+            return;
+        }
+        else
+        {
+            //Console.WriteLine("\nEste nombre valido: " + TipoPunto.Nombre + "\n");
+            ErrorNombreDuplicado = string.Empty;
+        }
+
+        var creado = await tiposPuntosService.Guardar(TipoPunto);
+
+        if (creado)
+        {
+            toastService.ShowSuccess("¡Tipo de punto creado exitosamente!");
+            navigationManager.NavigateTo("/TipoPunto/Index");
+        }
+        else
+        {
+            toastService.ShowError("Ha ocurrido un error inesperado, vuelva intentarlo más tarde.");
+        }
+    }
+}
