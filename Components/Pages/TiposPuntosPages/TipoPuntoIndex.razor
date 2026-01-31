@@ -1,0 +1,141 @@
+﻿@page "/TipoPunto/Index"
+
+@inject TiposPuntosService tiposPuntosService
+@inject NavigationManager navigationManager
+
+@using RegistroEstudiante.Extensors
+
+<PageTitle>Registro de tipos de puntos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-center mb-4">
+            <h5 class="card-title">Registro de tipos de puntos</h5>
+            <a href="/TipoPunto/Create" class="btn btn-primary"> <span class="bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+            @*labels*@
+            <div class="row ">
+                @*Filtra por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtro</strong></label>
+                </div>
+
+                @*Valor Filtro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+
+            <div class="row align-items-center">
+                @*Filtro*@
+                <div class="col-3">
+                    <div class="input-group">
+                        <InputSelect class="form-control" @bind-Value="Filtro">
+                            <option value="" selected disabled hidden >Elija una opción</option>
+                            <option value="Nombre">Nombre</option>
+                            <option value="Descripcion">Descripcion</option>
+                            <option value="Color">Color</option>
+                        </InputSelect>
+                    </div>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar..." />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-hover">
+                <thead class="table table-striped text-black">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Descripcion</th>
+                        <th>Valor de puntos</th>
+                        <th>Color</th>
+                        <th>Icono</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tipoPunto in ListaTiposPuntos)
+                    {
+                        <tr>
+                            <td> @tipoPunto.TipoId</td>
+                            <td> @tipoPunto.Nombre</td>
+                            <td> @tipoPunto.Descripcion</td>
+                            <td> @tipoPunto.ValorPuntos</td>
+                            <td>
+                                <span class="badge @GetCssColor(tipoPunto.Color)">
+                                    @tipoPunto.Color.ToString()
+                                </span>
+                            </td>
+                            <td>
+                                <i class="bi @GetCssIcon(tipoPunto.Icono) fs-4"></i>
+                            </td>
+                            <td class="text-center">
+                                <a href="/TipoPunto/Edit/@tipoPunto.TipoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="card-footer space-between">
+                <label>Cantidad: @ListaTiposPuntos.Count()</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public List<TiposPuntos> ListaTiposPuntos { get; set; } = new List<TiposPuntos>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaTiposPuntos = await tiposPuntosService.Listar(a => a.TipoId > 0);
+    }
+
+    public string GetCssColor(Enums.Color color)
+    {
+        return RegistroEstudiante.Extensors.ColorExtensions.GetCssBgColor(color) + " "
+               + RegistroEstudiante.Extensors.ColorExtensions.GetCssTextColor(color);
+    }
+
+    public string GetCssIcon(Enums.Icon icono)
+    {
+        return RegistroEstudiante.Extensors.IconExtensions.GetCssIcon(icono);
+    }
+
+    public async Task Buscar()
+    {
+        if (Filtro != "")
+        {
+            if (Filtro == "Nombre")
+            {
+                ListaTiposPuntos = await tiposPuntosService.Listar(a => a.Nombre.ToLower().Trim().Contains(ValorFiltro));
+            }
+            if (Filtro == "Descripcion")
+            {
+                ListaTiposPuntos = await tiposPuntosService.Listar(a => a.Descripcion.ToLower().Trim().Contains(ValorFiltro));
+            }
+            if (Filtro == "Color")
+            {
+                ListaTiposPuntos = await tiposPuntosService.Listar(a => a.Color.ToString().ToLower().Trim().Contains(ValorFiltro));
+            }
+        }
+        else
+        {
+            ListaTiposPuntos = await tiposPuntosService.Listar(a => a.TipoId > 0);
+        }
+    }
+}
